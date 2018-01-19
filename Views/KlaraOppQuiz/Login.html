@@ -6,7 +6,11 @@
 
 </head>
 <body>
-    <h1>KlaraOpp-Quiz</h1>
+    <div id="NavBar">
+        <h1>KlaraOpp-Quiz</h1>
+    </div>
+
+
     <div id="LoginDiv">
         <p>
             <form id="JoinQuiz">
@@ -22,13 +26,10 @@
             <form id="CreateQuiz">
                 <label>Quiz erstellen:</label>
                 <br>
-                <label>E-Mail:</label>
-                <input type="text" id="E-MailTb" />
+                <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="">
+                <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
                 <br>
-                <label>Passwort:</label>
-                <input type="password" id="PasswortTb">
-                <br>
-                <input type="submit" id="LoginBtn" value="Login">
+                <input type="submit" id="LoginBtn" value="Login" style="">
             </form>
         </p>
     </div>
