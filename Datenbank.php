@@ -5,7 +5,7 @@
 	
 	/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
 	
-	$sql = "CREATE DATABASE IF NOT EXISTS kahoot";
+	$sql = "CREATE DATABASE IF NOT EXISTS klaraoppquiz";
 	$result = mysqli_query($con, $sql);
 	
 	if ($result == TRUE) {
@@ -16,7 +16,7 @@
 	
 	/* Datenbank für weitere Queries auswählen */
 	
-	mysqli_select_db($con, "kahoot");
+	mysqli_select_db($con, "klaraoppquiz");
 		
 	
 	/* --- Tabellen anlegen --- */	
@@ -60,8 +60,8 @@
 			ID integer NOT NULL PRIMARY KEY AUTO_INCREMENT,
 			KATALOG_ID integer,
 			TEXT varchar (500),
-			BIL binary,
 			ZEIT integer,
+			BILD binary,			
 			constraint fk_katalog foreign key(KATALOG_ID) references `kataloge`(ID)
 		) ENGINE=InnoDB DEFAULT CHARSET=latin1";
 		$result = mysqli_query($con, $sql);
