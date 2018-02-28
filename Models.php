@@ -13,7 +13,7 @@
 		{
 			$this->ID = $ID;
 			$this->EMail = $EMail;
-			$this->Passwort = $Passwort;
+			$this->Passwort = passwort_hash(Passwort);
 			$this->Name = $Name;
 			$this->Vorname = $Vorname;
 		}
@@ -226,4 +226,203 @@
 		}
 	} //End Class antwort
 	
+	
+	class connector
+	{
+		function getAccount($email)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "SELECT * FROM accounts WHERE EMAIL = '" . email .  "';";
+			
+			$account instanceof account = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);
+			
+			return account;
+		} 		
+		
+		
+		function createKatalog($newKatalog instanceof katalog)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "INSERT INTO kataloge (ERSTELLER_ID, TITEL, BESCHREIBUNG, QUELLEN, BILD) values (" . newKatalog.getErstellerID . ", " . newKatalog.getTitel . ", " . newKatalog.getBeschreibung . ", " . newKatalog.getQuellen . ", " . newKatalog.getBild . ");";
+			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);			
+		}
+		
+		function updateKatalog($changedKatalog instanceof katalog)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "UPDATE kataloge SET ERSTELLER_ID = '" . changedKatalog.getErstellerID . "', TITEL = '" . changedKatalog.getTitel . "', BESCHREIBUNG = '" . changedKatalog.getBeschreibung . "', QUELLEN = '" . changedKatalog.getQuellen . "', BILD = '" . changedKatalog.getBild . "' WHERE ID = " .changedKatalog.getID . ";";
+			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);				
+		}
+		
+		function getKataloge()
+		{
+			private kataloge();
+			
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "SELECT * FROM kataloge";
+			
+			kataloge() = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);
+			
+			return kataloge();
+		}
+		
+		function getKatalogeForErsteller(int $accountID)
+		{
+			private kataloge();
+			
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "SELECT * FROM kataloge WHERE ERSTELLER_ID = " . accountID . ";";
+			
+			kataloge() = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);
+			
+			return kataloge();
+		}
+		
+		function createFrage($newFrage instanceof frage)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "INSERT INTO fragen (KATALOG_ID, TEXT, ZEIT, BILD) values (" . frage.getKatalogID . ", " . frage.getText . ", " . frage.getZeit . ", " . frage.getBild . ");";
+			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);			
+		}
+		
+		function updateFrage($changedFrage instanceof frage)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "UPDATE fragen SET KATALOG_ID = '" . changedFrage.getKatalogID . "', TEXT = '" . changedFrage.getText . "', ZEIT = '" . changedFrage.getZeit . "', BILD = '" . changedFrage.getBild . "' WHERE ID = " .changedFrage.getID . ";";
+			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);				
+		}
+		
+		function getFragen(int $katalogID)
+		{			
+			private fragen();
+			
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "SELECT * FROM fragen WHERE KATALOG_ID = " . katalogID . ";";
+			
+			fragen() = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);
+			
+			return fragen();
+		}
+		
+		function createAntwort($newAntwort instanceof antwort)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "INSERT INTO antworten (FRAGE_ID, TEXT, KORREKT) values (" . newAntwort.getFrageID . ", " . newAntwort.getText . ", " . newAntwort.getKorrekt . ");";
+			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);			
+		}
+		
+		function updateAntwort($changedAntwort instanceof antwort)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "UPDATE antworten SET FRAGE_ID = '" . changedAntwort.getFrageID . "', TEXT = '" . changedAntwort.getText . "', KORREKT = '" . changedAntwort.getKorrekt . " WHERE ID = ". changedAntwort.getID . ";";
+			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);				
+		}
+		
+		function getAntworten(int $frageID)
+		{			
+			private antworten();
+			
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "SELECT * FROM antworten WHERE FRAGE_ID = " . frageID . ";";
+			
+			antworten() = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);
+			
+			return fragen();
+		}
+		
+	}
 ?>
