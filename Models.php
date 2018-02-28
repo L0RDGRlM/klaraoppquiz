@@ -8,27 +8,47 @@
 		private $Vorname;
 		private $Aktiv;
 		
-		
-		function __construct($ID, $EMail, $Passwort, $Name, $Vorname)
+		/* Der Konstruktor des Accounts hasht direkt das hier übergebene Passwort */
+		function __construct($EMail, $Passwort, $Name, $Vorname)
 		{
-			$this->ID = $ID;
 			$this->EMail = $EMail;
 			$this->Passwort = passwort_hash(Passwort);
 			$this->Name = $Name;
 			$this->Vorname = $Vorname;
 		}
 		
+		/* Kann aufgerufen werden, um das übergebene Passwort gegen den im Account gespeicherten Hashwert zu verifizieren */
 		function validate_Login($passwort)
 		{
 			$validated = passwort_verify($passwort, $this->Passwort);			
 			return $validated;
 		}
 		
+		function getEMail()
+		{
+			return $this->EMail;
+		}
+		
+		function getPasswort()
+		{
+			return $this->Passwort;
+		}
+		
 		function getName()
+		{
+			return $this->Name;
+		}
+		
+		function getVorname()
+		{
+			return $this->Vorname;
+		}
+		
+		function getFullName()
 		{
 			$returnName = $this->Vorname . " " . $this->Name;
 			return $returnName;
-		}
+		}		
 		
 		function getID()
 		{
@@ -57,9 +77,8 @@
 		private $Bild;
 		
 		
-		function __construct($ID, $ErstellerID, $Titel, $Beschreibung, $Quellen, $Bild)
+		function __construct($ErstellerID, $Titel, $Beschreibung, $Quellen, $Bild)
 		{
-			$this->ID = $ID;
 			$this->ErstellerID = $ErstellerID;
 			$this->Titel = $Titel;
 			$this->Beschreibung = $Beschreibung;
@@ -128,9 +147,8 @@
 		private $Bild;
 		
 		
-		function __construct($ID, $KatalogID, $Text, $Zeit, $Bild)
+		function __construct($KatalogID, $Text, $Zeit, $Bild)
 		{
-			$this->ID = $ID;
 			$this->KatalogID = $KatalogID;
 			$this->Text = $Text;
 			$this->Zeit = $Zeit;
@@ -187,9 +205,8 @@
 		private $Korrekt;
 		
 		
-		function __construct($ID, $FrageID, $Text, $Korrekt)
+		function __construct($FrageID, $Text, $Korrekt)
 		{
-			$this->ID = $ID;
 			$this->FrageID = $FrageID;
 			$this->Text = $Text;
 			$this->Korrekt = $Korrekt;
@@ -228,7 +245,29 @@
 	
 	
 	class connector
-	{
+	{		
+		function createAccount($newAccount instanceof account)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "INSERT INTO accounts (EMAIL, PASSWORT, NAME, VORNAME, AKTIV) values (" . newAccount.getEMail . ", " . newAccount.getPasswort . ", " . newAccount.getName . ", " . newAccount.getVorname . ", " . newAccount.getAktiv . ");";
+			
+			mysqli_query($con, $sql);
+			
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM accounts ORDER BY ID DESC"
+			$account = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);	
+			
+			return $account;
+		}
+		
 		function getAccount($email)
 		{
 			/* Verbindung zur Datenbank aufbauen */
@@ -244,7 +283,7 @@
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return account;
+			return $account;
 		} 		
 		
 		
@@ -260,8 +299,14 @@
 			
 			mysqli_query($con, $sql);
 			
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM kataloge ORDER BY ID DESC"
+			$katalog = mysqli_query($con, $sql);
+			
 			/* Verbindung trennen */
-			mysqli_close($con);			
+			mysqli_close($con);	
+			
+			return $katalog;
 		}
 		
 		function updateKatalog($changedKatalog instanceof katalog)
@@ -278,6 +323,26 @@
 			
 			/* Verbindung trennen */
 			mysqli_close($con);				
+		}
+		
+		function getKatalog(int $katalogID)
+		{
+			private katalog instanceof katalog;
+			
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "SELECT * FROM katalog WHERE ID =" . katalogID . ";";
+			
+			katalog = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);
+			
+			return $katalog;
 		}
 		
 		function getKataloge()
@@ -297,7 +362,7 @@
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return kataloge();
+			return $kataloge();
 		}
 		
 		function getKatalogeForErsteller(int $accountID)
@@ -317,7 +382,7 @@
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return kataloge();
+			return $kataloge();
 		}
 		
 		function createFrage($newFrage instanceof frage)
@@ -329,11 +394,16 @@
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
 			$sql = "INSERT INTO fragen (KATALOG_ID, TEXT, ZEIT, BILD) values (" . frage.getKatalogID . ", " . frage.getText . ", " . frage.getZeit . ", " . frage.getBild . ");";
-			
 			mysqli_query($con, $sql);
+
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM fragen ORDER BY ID DESC"
+			$frage = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);			
+			
+			return $frage;
 		}
 		
 		function updateFrage($changedFrage instanceof frage)
@@ -381,11 +451,16 @@
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
 			$sql = "INSERT INTO antworten (FRAGE_ID, TEXT, KORREKT) values (" . newAntwort.getFrageID . ", " . newAntwort.getText . ", " . newAntwort.getKorrekt . ");";
-			
 			mysqli_query($con, $sql);
 			
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM antworten ORDER BY ID DESC"
+			$antwort = mysqli_query($con, $sql);
+			
 			/* Verbindung trennen */
-			mysqli_close($con);			
+			mysqli_close($con);	
+
+			return $antwort;			
 		}
 		
 		function updateAntwort($changedAntwort instanceof antwort)
