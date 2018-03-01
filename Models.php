@@ -555,7 +555,7 @@
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return antworten();
+			return $antworten();
 		}
 		
 	}
