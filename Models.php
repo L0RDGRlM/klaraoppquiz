@@ -8,27 +8,47 @@
 		private $Vorname;
 		private $Aktiv;
 		
-		
-		function __construct($ID, $EMail, $Passwort, $Name, $Vorname)
+		/* Der Konstruktor des Accounts hasht direkt das hier übergebene Passwort */
+		function __construct($EMail, $Passwort, $Name, $Vorname)
 		{
-			$this->ID = $ID;
 			$this->EMail = $EMail;
 			$this->Passwort = passwort_hash(Passwort);
 			$this->Name = $Name;
 			$this->Vorname = $Vorname;
 		}
 		
+		/* Kann aufgerufen werden, um das übergebene Passwort gegen den im Account gespeicherten Hashwert zu verifizieren */
 		function validate_Login($passwort)
 		{
 			$validated = passwort_verify($passwort, $this->Passwort);			
 			return $validated;
 		}
 		
+		function getEMail()
+		{
+			return $this->EMail;
+		}
+		
+		function getPasswort()
+		{
+			return $this->Passwort;
+		}
+		
 		function getName()
+		{
+			return $this->Name;
+		}
+		
+		function getVorname()
+		{
+			return $this->Vorname;
+		}
+		
+		function getFullName()
 		{
 			$returnName = $this->Vorname . " " . $this->Name;
 			return $returnName;
-		}
+		}		
 		
 		function getID()
 		{
@@ -57,9 +77,8 @@
 		private $Bild;
 		
 		
-		function __construct($ID, $ErstellerID, $Titel, $Beschreibung, $Quellen, $Bild)
+		function __construct($ErstellerID, $Titel, $Beschreibung, $Quellen, $Bild)
 		{
-			$this->ID = $ID;
 			$this->ErstellerID = $ErstellerID;
 			$this->Titel = $Titel;
 			$this->Beschreibung = $Beschreibung;
@@ -128,9 +147,8 @@
 		private $Bild;
 		
 		
-		function __construct($ID, $KatalogID, $Text, $Zeit, $Bild)
+		function __construct($KatalogID, $Text, $Zeit, $Bild)
 		{
-			$this->ID = $ID;
 			$this->KatalogID = $KatalogID;
 			$this->Text = $Text;
 			$this->Zeit = $Zeit;
@@ -187,9 +205,8 @@
 		private $Korrekt;
 		
 		
-		function __construct($ID, $FrageID, $Text, $Korrekt)
+		function __construct($FrageID, $Text, $Korrekt)
 		{
-			$this->ID = $ID;
 			$this->FrageID = $FrageID;
 			$this->Text = $Text;
 			$this->Korrekt = $Korrekt;
@@ -228,7 +245,29 @@
 	
 	
 	class connector
-	{
+	{		
+		function createAccount($newAccount instanceof account)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "INSERT INTO accounts (EMAIL, PASSWORT, NAME, VORNAME, AKTIV) values (" . $newAccount.getEMail . ", " . $newAccount.getPasswort . ", " . $newAccount.getName . ", " . $newAccount.getVorname . ", " . $newAccount.getAktiv . ");";
+			
+			mysqli_query($con, $sql);
+			
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM accounts ORDER BY ID DESC"
+			$account = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);	
+			
+			return $account;
+		}
+		
 		function getAccount($email)
 		{
 			/* Verbindung zur Datenbank aufbauen */
@@ -237,14 +276,14 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "SELECT * FROM accounts WHERE EMAIL = '" . email .  "';";
+			$sql = "SELECT * FROM accounts WHERE EMAIL = '" . $email .  "';";
 			
 			$account instanceof account = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return account;
+			return $account;
 		} 		
 		
 		
@@ -256,12 +295,18 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "INSERT INTO kataloge (ERSTELLER_ID, TITEL, BESCHREIBUNG, QUELLEN, BILD) values (" . newKatalog.getErstellerID . ", " . newKatalog.getTitel . ", " . newKatalog.getBeschreibung . ", " . newKatalog.getQuellen . ", " . newKatalog.getBild . ");";
+			$sql = "INSERT INTO kataloge (ERSTELLER_ID, TITEL, BESCHREIBUNG, QUELLEN, BILD) values (" . $newKatalog.getErstellerID . ", " . $newKatalog.getTitel . ", " . $newKatalog.getBeschreibung . ", " . $newKatalog.getQuellen . ", " . $newKatalog.getBild . ");";
 			
 			mysqli_query($con, $sql);
 			
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM kataloge ORDER BY ID DESC"
+			$katalog = mysqli_query($con, $sql);
+			
 			/* Verbindung trennen */
-			mysqli_close($con);			
+			mysqli_close($con);	
+			
+			return $katalog;
 		}
 		
 		function updateKatalog($changedKatalog instanceof katalog)
@@ -272,8 +317,51 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "UPDATE kataloge SET ERSTELLER_ID = '" . changedKatalog.getErstellerID . "', TITEL = '" . changedKatalog.getTitel . "', BESCHREIBUNG = '" . changedKatalog.getBeschreibung . "', QUELLEN = '" . changedKatalog.getQuellen . "', BILD = '" . changedKatalog.getBild . "' WHERE ID = " .changedKatalog.getID . ";";
+			$sql = "UPDATE kataloge SET ERSTELLER_ID = '" . $changedKatalog.getErstellerID . "', TITEL = '" . $changedKatalog.getTitel . "', BESCHREIBUNG = '" . $changedKatalog.getBeschreibung . "', QUELLEN = '" . $changedKatalog.getQuellen . "', BILD = '" . $changedKatalog.getBild . "' WHERE ID = " . $changedKatalog.getID . ";";
 			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);				
+		}
+		
+		function getKatalog(int $katalogID)
+		{
+			private $katalog instanceof katalog;
+			
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "SELECT * FROM katalog WHERE ID =" . $katalogID . ";";
+			
+			$katalog = mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);
+			
+			return $katalog;
+		}
+		
+		function deleteKatalog(int $ID)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			
+			/* Erst müssen die Fragen inklusive Antworten gelöscht werden, dann erst der Katalog */
+			$fragen() instanceof frage = getFragen($ID);
+			foreach ($fragen as $frage instanceof frage)
+			{
+				deleteFrage($frage.getID);
+			}
+						
+			$sql = "DELETE FROM fragen WHERE ID = ". $ID . ";";			
 			mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
@@ -282,7 +370,7 @@
 		
 		function getKataloge()
 		{
-			private kataloge();
+			private $kataloge();
 			
 			/* Verbindung zur Datenbank aufbauen */
 			$con = mysqli_connect("","root");
@@ -292,17 +380,17 @@
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
 			$sql = "SELECT * FROM kataloge";
 			
-			kataloge() = mysqli_query($con, $sql);
+			$kataloge() = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return kataloge();
+			return $kataloge();
 		}
 		
 		function getKatalogeForErsteller(int $accountID)
 		{
-			private kataloge();
+			private $kataloge();
 			
 			/* Verbindung zur Datenbank aufbauen */
 			$con = mysqli_connect("","root");
@@ -310,14 +398,14 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "SELECT * FROM kataloge WHERE ERSTELLER_ID = " . accountID . ";";
+			$sql = "SELECT * FROM kataloge WHERE ERSTELLER_ID = " . $accountID . ";";
 			
-			kataloge() = mysqli_query($con, $sql);
+			$kataloge() = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return kataloge();
+			return $kataloge();
 		}
 		
 		function createFrage($newFrage instanceof frage)
@@ -328,12 +416,17 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "INSERT INTO fragen (KATALOG_ID, TEXT, ZEIT, BILD) values (" . frage.getKatalogID . ", " . frage.getText . ", " . frage.getZeit . ", " . frage.getBild . ");";
-			
+			$sql = "INSERT INTO fragen (KATALOG_ID, TEXT, ZEIT, BILD) values (" . $frage.getKatalogID . ", " . $frage.getText . ", " . $frage.getZeit . ", " . $frage.getBild . ");";
 			mysqli_query($con, $sql);
+
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM fragen ORDER BY ID DESC"
+			$frage = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);			
+			
+			return $frage;
 		}
 		
 		function updateFrage($changedFrage instanceof frage)
@@ -344,8 +437,28 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "UPDATE fragen SET KATALOG_ID = '" . changedFrage.getKatalogID . "', TEXT = '" . changedFrage.getText . "', ZEIT = '" . changedFrage.getZeit . "', BILD = '" . changedFrage.getBild . "' WHERE ID = " .changedFrage.getID . ";";
+			$sql = "UPDATE fragen SET KATALOG_ID = '" . $changedFrage.getKatalogID . "', TEXT = '" . $changedFrage.getText . "', ZEIT = '" . $changedFrage.getZeit . "', BILD = '" . $changedFrage.getBild . "' WHERE ID = " . $changedFrage.getID . ";";
 			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);				
+		}
+		
+		function deleteFrage(int $ID)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			
+			/* Erst müssen die Antworten gelöscht werden, dann erst die Frage */
+			$sql = "DELETE FROM antworten WHERE FRAGE_ID = ". $ID . ";";			
+			mysqli_query($con, $sql);
+			
+			$sql = "DELETE FROM fragen WHERE ID = ". $ID . ";";			
 			mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
@@ -354,7 +467,7 @@
 		
 		function getFragen(int $katalogID)
 		{			
-			private fragen();
+			private $fragen();
 			
 			/* Verbindung zur Datenbank aufbauen */
 			$con = mysqli_connect("","root");
@@ -362,14 +475,14 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "SELECT * FROM fragen WHERE KATALOG_ID = " . katalogID . ";";
+			$sql = "SELECT * FROM fragen WHERE KATALOG_ID = " . $katalogID . ";";
 			
-			fragen() = mysqli_query($con, $sql);
+			$fragen() = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return fragen();
+			return $fragen();
 		}
 		
 		function createAntwort($newAntwort instanceof antwort)
@@ -380,12 +493,17 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "INSERT INTO antworten (FRAGE_ID, TEXT, KORREKT) values (" . newAntwort.getFrageID . ", " . newAntwort.getText . ", " . newAntwort.getKorrekt . ");";
-			
+			$sql = "INSERT INTO antworten (FRAGE_ID, TEXT, KORREKT) values (" . $newAntwort.getFrageID . ", " . $newAntwort.getText . ", " . $newAntwort.getKorrekt . ");";
 			mysqli_query($con, $sql);
 			
+			/* Nach dem Insert holen wir uns den Datensatz wieder aus der DB, da die ID dort per Auto Increment vergeben wird */
+			$sql = "SELECT TOP 1 * FROM antworten ORDER BY ID DESC"
+			$antwort = mysqli_query($con, $sql);
+			
 			/* Verbindung trennen */
-			mysqli_close($con);			
+			mysqli_close($con);	
+
+			return $antwort;			
 		}
 		
 		function updateAntwort($changedAntwort instanceof antwort)
@@ -396,7 +514,23 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "UPDATE antworten SET FRAGE_ID = '" . changedAntwort.getFrageID . "', TEXT = '" . changedAntwort.getText . "', KORREKT = '" . changedAntwort.getKorrekt . " WHERE ID = ". changedAntwort.getID . ";";
+			$sql = "UPDATE antworten SET FRAGE_ID = '" . $changedAntwort.getFrageID . "', TEXT = '" . $hangedAntwort.getText . "', KORREKT = '" . $changedAntwort.getKorrekt . " WHERE ID = ". $changedAntwort.getID . ";";
+			
+			mysqli_query($con, $sql);
+			
+			/* Verbindung trennen */
+			mysqli_close($con);				
+		}
+		
+		function deleteAntwort(int $ID)
+		{
+			/* Verbindung zur Datenbank aufbauen */
+			$con = mysqli_connect("","root");
+			/* Datenbank für weitere Queries auswählen */
+			mysqli_select_db($con, "klaraoppquiz");
+	
+			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
+			$sql = "DELETE FROM antworten WHERE ID = ". $ID . ";";
 			
 			mysqli_query($con, $sql);
 			
@@ -406,7 +540,7 @@
 		
 		function getAntworten(int $frageID)
 		{			
-			private antworten();
+			private $antworten();
 			
 			/* Verbindung zur Datenbank aufbauen */
 			$con = mysqli_connect("","root");
@@ -414,14 +548,14 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "SELECT * FROM antworten WHERE FRAGE_ID = " . frageID . ";";
+			$sql = "SELECT * FROM antworten WHERE FRAGE_ID = " . $frageID . ";";
 			
-			antworten() = mysqli_query($con, $sql);
+			$antworten() = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);
 			
-			return fragen();
+			return $antworten();
 		}
 		
 	}
