@@ -12,17 +12,25 @@
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
     <style>
         #NewCatalog{
-            display: flex; justify-content: center; margin-top: 50px;
+            display: flex; justify-content: center; margin-top: 50px; width: 60%;
         }
         .card {
             box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
             transition: 0.3s;
             border-radius: 5px;
-            width: 20%;
+            width: 50%;
             background-color: chartreuse;
         }
         .card:hover {
             box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        }
+        #left{
+            float: left;
+            width: 50%;
+        }
+        #right{
+            float: right;
+            width: 50%;
         }
         
     </style>
@@ -33,13 +41,13 @@
 <div class="container">
     <h1 align="center">KlaraOpp-Quiz</h1>
     <div id="NewCatalog">
-        <input type="submit" class="form-control btn btn-outline-success" value#="Neuer Katalog"/>
-         <button>Neuer Katalog</button>
+        <input type="submit" class="form-control btn btn-outline-success" value="Neuer Katalog"/>
     </div>
     <h2>Eigene Kataloge:</h2>
+    <div id="left">
         <div class="card">
             <div class="card-header">
-                <h3>Quiz dwa</h3>
+                <h3>Quiz dva</h3>
             </div>
             <div class="card-body">
                 Hier könnte Ihre Werbung stehen
@@ -53,9 +61,11 @@
                 Hier könnte Ihre Werbung stehen
             </div>
         </div>
+    </div>
+    <div id="right">
         <div class="card">
             <div class="card-header">
-                <h3>Quiz czetyrie</h3>
+                <h3>Quiz vier</h3>
             </div>
             <div class="card-body">
                 Hier könnte Ihre Werbung stehen
@@ -63,12 +73,14 @@
         </div>
         <div class="card">
             <div class="card-header">
-                <h3>Quiz adin</h3>
+                <h3>Quiz odin</h3>
             </div>
             <div class="card-body">
                 Hier könnte Ihre Werbung stehen
             </div>
         </div>
+    </div>
+       
 </div>
 </body>
 </html>
