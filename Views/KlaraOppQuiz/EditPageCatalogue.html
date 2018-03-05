@@ -6,34 +6,59 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="css/login.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
     <style type="text/css">
         @import url(https://fonts.googleapis.com/css?family=Roboto:400,300,100,700,500);
     </style>
     <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js">    </script>
     <style>
-        #description {
+        #descriptionDiv {
+            float: right;
             align-content: center;
             align-items: center;
             align-self: center;
+            width: 85%;
         }
 
-        .btn-save {
-            background-color: rgb(232, 233, 236);
-            color: rgb(45, 59, 85);
-            font-size: 14px;
-            height: auto;
-            font-weight: normal;
-            box-shadow: none;
-            outline: none;
-            padding: 14px 0px;
-            border-width: initial;
-            border-style: none;
-            border-color: initial;
-            border-image: initial;
-            border-radius: 0px;
+        #imgDiv {
+            float: left;
+            width: 15px;
         }
+
+        #saveDiv {
+            float: right;
+        }
+
+        #addQuestionbtn {
+            width: 100%;
+            display: block;
+        }
+
+        .btn-questions {
+            display: inline-block;
+            padding: 6px 12px;
+            margin-bottom: 0;
+            margin-top: 25px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-image: none;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            width: 100%;
+        }
+
     </style>
 </head>
 
@@ -47,27 +72,27 @@
         <div class="row">
             <div class="col-4">
                 <div class="form-group">
-                    <form id="catalogue-form" action="" method="post">
-                        <input type="image" name="catImg" src="/images/Question_mark.png">
-                        <div id="description">
+                    <form id="catalogue-form" action="#" method="post">
+                        <div id="imgDiv">
+                            <input type="image" name="catImg" src="/images/Question_mark.png">
+                        </div>
+                        <div id="descriptionDiv">
                             Titel:
                             <input type="text" class="form-control" name="catTitle" placeholder="alterTitel">
                             <br> Beschreibung:
-                            <input type="text" class="form-control" name="catTitle" placeholder="alteBeschreibung">
-                            <br>
+                            <input type="text" class="form-control" name="catText" id="descriptionTb" placeholder="alteBeschreibung">
+                            <div id="saveDiv">
+                                <input type="submit" name="save" value="Speichern" class="btn">
+                            </div>
                         </div>
-                        <input type="button" name="AddQuestion" value="Frage hinzufügen" class="btn">
-                        <div class="Questions">
-                            <input type="button" name="QuizId" id="username" tabindex="1" class="form-control" placeholder="QuizID">
+                        <input type="button" name="AddQuestion" id="addQuestionbtn" value="Frage hinzufügen" class="btn">
+                        <div class="QuestionDiv">
+                            <input type="button" name="QuizId" id="username" class="btn-questions" tabindex="1" value="Frage1">
                         </div>
-                        <input type="submit" name="save" value="Speichern" class="btn-save">
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-
 </body>
-
 </html>
