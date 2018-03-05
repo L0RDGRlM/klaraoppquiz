@@ -15,6 +15,7 @@
 			$this->Passwort = passwort_hash(Passwort);
 			$this->Name = $Name;
 			$this->Vorname = $Vorname;
+			$this->Aktiv = true;
 		}
 		
 		/* Kann aufgerufen werden, um das übergebene Passwort gegen den im Account gespeicherten Hashwert zu verifizieren */
@@ -278,7 +279,7 @@
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
 			$sql = "SELECT * FROM accounts WHERE EMAIL = '" . $email .  "';";
 			
-			$account instanceof account = mysqli_query($con, $sql);
+			$account = mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
 			mysqli_close($con);
@@ -335,7 +336,7 @@
 			mysqli_select_db($con, "klaraoppquiz");
 	
 			/* SQL-String erzeugen und anschließend an MySQL mittels der gerade geöffneten Verbindung übermitteln */
-			$sql = "SELECT * FROM katalog WHERE ID =" . $katalogID . ";";
+			$sql = "SELECT * FROM kataloge WHERE ID =" . $katalogID . ";";
 			
 			$katalog = mysqli_query($con, $sql);
 			
@@ -361,7 +362,7 @@
 				deleteFrage($frage.getID);
 			}
 						
-			$sql = "DELETE FROM fragen WHERE ID = ". $ID . ";";			
+			$sql = "DELETE FROM kataloge WHERE ID = ". $ID . ";";			
 			mysqli_query($con, $sql);
 			
 			/* Verbindung trennen */
@@ -539,9 +540,7 @@
 		}
 		
 		function getAntworten(int $frageID)
-		{			
-			private $antworten();
-			
+		{						
 			/* Verbindung zur Datenbank aufbauen */
 			$con = mysqli_connect("","root");
 			/* Datenbank für weitere Queries auswählen */
